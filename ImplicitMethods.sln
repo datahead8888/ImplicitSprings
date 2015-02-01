@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImplicitMethods (35) - jacobian constraints - math kludge", "ImplicitMethods\ImplicitMethods.vcxproj", "{A71A0CD4-AD05-40B7-AD28-CA34B82E32DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A71A0CD4-AD05-40B7-AD28-CA34B82E32DA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A71A0CD4-AD05-40B7-AD28-CA34B82E32DA}.Debug|Win32.Build.0 = Debug|Win32
+		{A71A0CD4-AD05-40B7-AD28-CA34B82E32DA}.Release|Win32.ActiveCfg = Release|Win32
+		{A71A0CD4-AD05-40B7-AD28-CA34B82E32DA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
