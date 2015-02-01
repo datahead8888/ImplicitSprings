@@ -40,14 +40,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\Microsoft Visual Studio 10.0\VC\include\gl;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Program Files\Visual Leak Detector\include;E:\8998\ImplicitMethods - Mucha et al - 26\ImplicitMethods;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;E:\8998\ImplicitMethods - Mucha et al - 26\ImplicitMethods;C:\Program Files\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Microsoft Visual Studio 10.0\VC\include\gl;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;E:\8998\ImplicitMethods - Mucha et al - 26\ImplicitMethods;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;E:\8998\ImplicitMethods - Mucha et al - 26\ImplicitMethods;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
