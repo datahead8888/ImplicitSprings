@@ -30,6 +30,7 @@
 //http://www.amath.unc.edu/Faculty/mucha/Reprints/SCAclothcontrolpreprint.pdf - Formulas for A and b in Ax = b system - page 5
 //http://en.wikipedia.org/wiki/Conjugate_gradient - Algorithm for conjugate gradient (solves Ax = b)
 
+#include <gl/glew.h>
 #include <gl/glut.h>
 #include <gl/GLU.H>
 
@@ -39,14 +40,19 @@
 #include "ParticleSystem.h"
 #include "ViewManager.h"
 #include "Keyboard.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 using namespace std;
+
+GLuint SetupGLSL(char *fileName);
 
 //Note: the reason these were declared globally is to accommodate Glut's function calling system
 ParticleSystem * particleSystem;	//The main particle system
 ViewManager viewManager;			//Instance of the view manager to allow user view control
 Keyboard * keyboard;				//Instance of the Keyboard class to process key presses
 Logger * logger;					//Instance of Logger class to perform all logging
+double ar = 0;
 
 //This function is called for rendering by GLUT
 void render()
@@ -61,16 +67,23 @@ void render()
 	#endif
 
 	//Update Logic
-	double timeElapsed = 0.1;  //Size of time step
+	double timeElapsed = 0.01;  //Size of time step
 	particleSystem -> doUpdate(timeElapsed);
 	particleSystem -> calculateNormals();
 
 	//Render Logic
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glLoadIdentity();
 
-	viewManager.doTransform();
-	particleSystem -> doRender();
+	//viewManager.doTransform();
+	//particleSystem -> doRender();
+
+	glm::mat4 projMatrix = glm::perspective(45.0f, (float)ar, 0.001f, 100.0f); //Projection Matrix
+	double cameraHeight = 0.5;  //Max height of camera if looking straight down at character
+	
+	glm::mat4 modelViewMatrix = viewManager.doTransform();
+
+	particleSystem -> doRender(projMatrix, modelViewMatrix);
 
 	glFlush();
 
@@ -105,8 +118,8 @@ void resize(int width, int height)
 	//Calculate the aspect ratio using the x and y dimensions
 	double ar = (double) width / height;
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
 
 	//Set the Open GL viewport to the window's dimensions
 	glViewport(0, 0, width, height);
@@ -114,10 +127,11 @@ void resize(int width, int height)
 	//45 degree viewing angle, use the above calculated aspect ratio,
 	//set up near clipping plane to 0.1, the far clipping pane to 50.0
 	//(Clipping plane values must be positive)
-	gluPerspective(45.0, ar, 0.1, 50.0);
+	//gluPerspective(45.0, ar, 0.1, 50.0);
+	ar = (double) width / height;
 
 	//Go back to MODEL VIEW matrix mode
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_MODELVIEW);
 	particleSystem -> setWindowDimensions(width,height);
 }
 
@@ -172,6 +186,7 @@ int main(int argCount, char **argValue)
 	int windowWidth = 1000;
 	int windowHeight = 700;
 	glutInitWindowSize(windowWidth, windowHeight);
+	resize(windowWidth, windowHeight);
 	particleSystem -> setWindowDimensions(windowWidth, windowHeight);
 	glutCreateWindow("Implicit Methods");
 
@@ -181,31 +196,36 @@ int main(int argCount, char **argValue)
 	glShadeModel(GL_SMOOTH);
 
 	//Set up lighting attributes
-	GLfloat lightPosition[] = {0.0, 0,0, 1.0, 0.0};
-	GLfloat lightAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat lightSpecular[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+	//GLfloat lightPosition[] = {0.0, 0,0, 1.0, 0.0};
+	//GLfloat lightAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	//GLfloat lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	//GLfloat lightSpecular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	//glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 
-	GLfloat dummy[2];  //The glLightModelfv requires a pointer.  Since it's not zero here, this will result in two sided lighting
-	glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, dummy);
+	//GLfloat dummy[2];  //The glLightModelfv requires a pointer.  Since it's not zero here, this will result in two sided lighting
+	//glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, dummy);
 
-	GLfloat materialAmbientGreen[] = {0.0, 0.0, 0.0, 1.0}; //No ambient color
-	GLfloat materialDiffuseGreen[] = {0.0, 0.7, 0.0, 1.0};
-	GLfloat materialAmbientBlue[] = {0.0, 0.0, 0.0, 1.0};  //No ambient color
-	GLfloat materialDiffuseBlue[] = {0.0, 0.0, 0.7, 1.0};
-	glMaterialfv(GL_BACK, GL_AMBIENT, materialAmbientBlue);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbientGreen);
-	glMaterialfv(GL_BACK, GL_DIFFUSE, materialDiffuseBlue);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuseGreen);
+	//GLfloat materialAmbientGreen[] = {0.0, 0.0, 0.0, 1.0}; //No ambient color
+	//GLfloat materialDiffuseGreen[] = {0.0, 0.7, 0.0, 1.0};
+	//GLfloat materialAmbientBlue[] = {0.0, 0.0, 0.0, 1.0};  //No ambient color
+	//GLfloat materialDiffuseBlue[] = {0.0, 0.0, 0.7, 1.0};
+	//glMaterialfv(GL_BACK, GL_AMBIENT, materialAmbientBlue);
+	//glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbientGreen);
+	//glMaterialfv(GL_BACK, GL_DIFFUSE, materialDiffuseBlue);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuseGreen);
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	
+	GLenum errorCode = glewInit();
+	GLuint programObject = SetupGLSL("maze");
+	particleSystem->initVBOs();
+	particleSystem->setProgramObject(programObject);
+
 	glutDisplayFunc(render);
 	glutIdleFunc(render);
 	glutReshapeFunc(resize);
@@ -219,4 +239,5 @@ int main(int argCount, char **argValue)
 	delete particleSystem;
 	delete logger;
 
+	return 0;
 }

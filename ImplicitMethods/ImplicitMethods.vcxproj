@@ -40,14 +40,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\Microsoft Visual Studio 10.0\VC\include\gl;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Microsoft Visual Studio 10.0\VC\include\gl;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;C:\Users\datahead8888\Documents\opengllibs;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;C:\Users\datahead8888\Documents\opengllibs;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\lib;C:\Users\datahead8888\Documents\freeglut\lib;C:\Users\datahead8888\Documents\opengllibs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\NVIDIA Corporation\Cg\bin;C:\Program Files %28x86%29\NVIDIA Corporation\Cg\include;C:\Users\datahead8888\Documents\freeglut\include;C:\Users\datahead8888\Documents\opengllibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,7 +60,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;glut32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;glut32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,7 +78,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glut32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -87,6 +87,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="ShaderSetup.cpp" />
     <ClCompile Include="targa-1.cpp" />
     <ClCompile Include="ViewManager.cpp" />
   </ItemGroup>
@@ -98,6 +99,10 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="targa.h" />
     <ClInclude Include="ViewManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="maze.frag" />
+    <None Include="maze.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

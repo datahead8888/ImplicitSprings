@@ -1,3 +1,4 @@
+#include <gl/glew.h>
 #include "ParticleSystem.h"
 #include <gl/glut.h>
 #include <gl/GLU.h>
@@ -35,7 +36,7 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	dimensionSquared = DIMENSION * DIMENSION;
 
 	//Declare Constants
-	kd = 20;					//Damping constant
+	kd = 5;					//Damping constant
 	ks = 500;					//Spring constant - 1000 seems to give reasonable stiffness, but much larger values work, too
 	earthGravityValue = 9.8;	//meters per second for earth gravity force
 	//Set number of rows and columns for grid here
@@ -221,6 +222,65 @@ ParticleSystem::ParticleSystem(Logger * logger)
 		logger -> printEdges(edgeList, numEdges, logger -> MEDIUM);
 	}
 	#endif
+
+	////////////////////////////LIGHTING////////////////////////////////////////////////
+	//If lighting is calculated in eye space, the eye position basically is the origin - use this for the default
+	eyePos[0] = 0.0f;
+	eyePos[1] = 0.0f;
+	eyePos[2] = -5.0f;
+ 
+	lightAmbient[0] = 1.0; 
+	lightAmbient[1] = 1.0;
+	lightAmbient[2] = 1.0;
+
+	lightFullAmbient[0] = 0.9; //Lots of ambient - useful for debugging in wireframe mode
+	lightFullAmbient[1] = 0.9;
+	lightFullAmbient[2] = 0.9;
+	lightFullAmbient[3] = 1;
+
+	lightDiffuse[0] = 1.0;
+	lightDiffuse[1] = 1.0;
+	lightDiffuse[2] = 1.0;
+
+	lightDiffuse[3] = 1;
+
+	//Turning off specular for now unless it's needed (and verified as good looking)
+	//lightSpecular[0] = 1;
+	//lightSpecular[1] = 1;
+	//lightSpecular[2] = 1;
+	lightSpecular[0] = 0;
+	lightSpecular[1] = 0;
+	lightSpecular[2] = 0;
+	lightSpecular[3] = 1;
+
+	lightPosition[0] = 0;
+	lightPosition[1] = 0;
+	lightPosition[2] = 1;
+	lightPosition[3] = 1;
+
+	matAmbient[0] = 0.05;
+	matAmbient[1] = 0.05;
+	matAmbient[2] = 0.05;
+	matAmbient[3] = 1;
+
+	matDiffuse[0] = 0.8;
+	matDiffuse[1] = 0.8;
+	matDiffuse[2] = 0.8;
+	matDiffuse[3] = 1;
+
+	matSpecular[0] = 0.9;
+	matSpecular[1] = 0.9;
+	matSpecular[2] = 0.9;
+	matSpecular[3] = 1;
+
+	lightColor[0] = 1.0f;
+	lightColor[1] = 0.1f;
+	lightColor[2] = 0.1f;
+	lightColor[3] = 1.0f;
+
+	matShininess[0] = 10000;
+
+	ambientMode = false;
 
 }
 
@@ -1080,6 +1140,164 @@ void ParticleSystem::doRender()
 
 }
 
+
+//This method stores the current eye position (from the camera) for this mesh
+//parameter eyePos - the eye position to store
+void ParticleSystem::setEyePos(glm::vec3 & eyePos)
+{
+	this -> eyePos[0] = eyePos[0];
+	this -> eyePos[1] = eyePos[1];
+	this -> eyePos[2] = eyePos[2];
+}
+
+void ParticleSystem::initVBOs()
+{
+	//Spring mesh
+	glGenBuffers(1, vboHandle);
+	glGenBuffers(1, indexVboHandle);
+}
+
+void ParticleSystem::sendVBOs()
+{
+	//Spring Mesh
+	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * numParticles, particles, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	indices.clear();
+
+	//Render surfaces
+	int edgeCounter = 0;	//Current edge number
+	int i = 0, j = 0;		//For loop indices
+	for (i = 0; i < rows - 1; i++) //row
+	{
+		for (j = 0; j < cols - 1; j++) //column
+		{
+			/*
+			Particle * topLeft = &particles[edgeList[edgeCounter].start];			//because this was the start of the first connection
+			Particle * bottomLeft = &particles[edgeList[edgeCounter].end];			//because the first connection connected to the bottom
+			Particle * bottomRight = &particles[edgeList[edgeCounter + 1].end];		//because the second connection connected to the bottom right
+			Particle * topRight = &particles[edgeList[edgeCounter + 2].end];		//because the third connection connected to the right
+	
+			edgeCounter += 4;
+
+			glBegin(GL_TRIANGLES);
+				
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			glNormal3f(bottomLeft->normal[0], bottomLeft->normal[1], bottomLeft->normal[2]);
+			glVertex3f(bottomLeft->position[0], bottomLeft->position[1], bottomLeft->position[2]); 
+			glNormal3f(topLeft->normal[0], topLeft->normal[1], topLeft->normal[2]);
+			glVertex3f(topLeft->position[0], topLeft->position[1], topLeft->position[2]);
+			glNormal3f(topRight->normal[0], topRight->normal[1], topRight->normal[2]);
+			glVertex3f(topRight->position[0], topRight->position[1], topRight->position[2]);
+		
+			glNormal3f(bottomRight->normal[0], bottomRight->normal[1], bottomRight->normal[2]);
+			glVertex3f(bottomRight->position[0], bottomRight->position[1], bottomRight->position[2]);
+			glNormal3f(bottomLeft->normal[0], bottomLeft->normal[1], bottomLeft->normal[2]); 
+			glVertex3f(bottomLeft->position[0], bottomLeft->position[1], bottomLeft->position[2]); 
+			glNormal3f(topRight->normal[0], topRight->normal[1], topRight->normal[2]);
+			glVertex3f(topRight->position[0], topRight->position[1], topRight->position[2]);
+				
+			glEnd();
+			*/
+
+			int topLeft = edgeList[edgeCounter].start;			//because this was the start of the first connection
+			int bottomLeft = edgeList[edgeCounter].end;			//because the first connection connected to the bottom
+			int bottomRight = edgeList[edgeCounter + 1].end;		//because the second connection connected to the bottom right
+			int topRight = edgeList[edgeCounter + 2].end;		//because the third connection connected to the right
+	
+			edgeCounter += 4;
+
+			indices.push_back(bottomLeft);
+			indices.push_back(topLeft);
+			indices.push_back(topRight);
+			
+			indices.push_back(bottomRight);
+			indices.push_back(bottomLeft);
+			indices.push_back(topRight);
+		}
+
+		edgeCounter++;
+	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), &indices[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+ 
+}
+
+void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatrix)
+{
+	sendVBOs();
+
+	glm::mat4 totalMatrix = projMatrix * modelViewMatrix;
+	glm::mat4 normalMatrix = glm::inverse(modelViewMatrix);
+	normalMatrix = glm::transpose(normalMatrix);
+
+	//Spring mesh rendering
+	glUseProgram(programObject);
+
+	//Parameter setup
+	GLuint c0 = glGetAttribLocation(programObject, "position");
+	GLuint c1 = glGetAttribLocation(programObject, "normal");
+	GLuint c2 = glGetAttribLocation(programObject, "color1");
+
+	GLuint l1 = glGetUniformLocation(programObject, "lightAmbient");
+	GLuint l2 = glGetUniformLocation(programObject, "lightDiffuse");
+	GLuint l3 = glGetUniformLocation(programObject, "lightSpecular");
+	GLuint lp = glGetUniformLocation(programObject, "lightPosition");
+	GLuint ep = glGetUniformLocation(programObject, "eyePosition");
+
+	GLuint d1 = glGetUniformLocation(programObject, "ambient_coef");
+	GLuint d2 = glGetUniformLocation(programObject, "diffuse_coef");
+	GLuint d3 = glGetUniformLocation(programObject, "specular_coef");
+	GLuint d4 = glGetUniformLocation(programObject, "mat_shininess");
+
+	GLuint m1 = glGetUniformLocation(programObject, "local2clip");
+	GLuint m2 = glGetUniformLocation(programObject, "local2eye");
+	GLuint m3 = glGetUniformLocation(programObject, "normalMatrix");
+
+	glEnableVertexAttribArray(c0); 
+	glEnableVertexAttribArray(c1);
+    glEnableVertexAttribArray(c2); 
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
+
+	glVertexAttribPointer(c0,4,GL_FLOAT, GL_FALSE, sizeof(Particle),(char*) NULL+0); 
+	glVertexAttribPointer(c1,4,GL_FLOAT, GL_FALSE, sizeof(Particle),(char*) NULL+16); 
+    glVertexAttribPointer(c2,4,GL_FLOAT, GL_FALSE, sizeof(Particle),(char*) NULL+32); 
+
+	//If in ambient mode, add extra ambience to make things really bright
+	//Otherwise use normal ambience
+	if (ambientMode)
+	{
+		glUniform4f(l1, lightAmbient[0], lightAmbient[1], lightFullAmbient[2], 1.0);
+	}
+	else
+	{
+		glUniform4f(l1, lightAmbient[0], lightAmbient[1], lightAmbient[2], 1.0);
+	}
+	glUniform4f(l2, lightDiffuse[0], lightDiffuse[1], lightDiffuse[2], 1.0);
+	glUniform4f(l3, lightSpecular[0], lightSpecular[1], lightSpecular[2],1.0);
+	glUniform4f(lp, lightPosition[0], lightPosition[1], lightPosition[2], lightPosition[3]);
+	glUniform4f(ep, eyePos[0], eyePos[1], eyePos[2], 1); 
+
+	glUniform4f(d1, matAmbient[0], matAmbient[1], matAmbient[2], 1.0);
+	glUniform4f(d2, matDiffuse[0], matDiffuse[1], matDiffuse[2], 1.0);
+	glUniform4f(d3, matSpecular[0], matSpecular[1], matSpecular[2],1.0);
+	glUniform1f(d4, matShininess[0]);
+
+	glUniformMatrix4fv(m1, 1, GL_FALSE, &totalMatrix[0][0]);
+	glUniformMatrix4fv(m2, 1, GL_FALSE, &modelViewMatrix[0][0]);
+	glUniformMatrix4fv(m3, 1, GL_FALSE, &normalMatrix[0][0]);
+
+	//Draw
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (char *) NULL + 0);
+
+	glUseProgram(0);
+ 			
+}
 
 //This method iteratively keeps applying forces until it detects it has reached equilibrium
 //The alternative methode is a large system of equations on paper, since we would need to compute

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <gl/glut.h>
 #include <gl/GLU.H>
 #include <vector>
@@ -22,11 +24,14 @@ class ParticleSystem
 	public:
 	ParticleSystem(Logger * logger);
 	~ParticleSystem();
+	void initVBOs();
+	void sendVBOs();
 	void reset();
 	void doUpdate(double elapsedSeconds);
 	double * findConjugateGradient(double * ADiagonalEntries, double * ANonDiagonalEntries, double * b, double * x0);
 	void calculateNormals();
 	void doRender();
+	void doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatrix);
 	//UI Methods
 	void increaseEarthGravity(double amount);
 	void increaseStraightRestLength(double amount);
@@ -36,6 +41,8 @@ class ParticleSystem
 	void toggleRenderMode();
 	void toggleImageRendering();
 	void goToRestLengthsForGravity(double threshold);
+	void setProgramObject(GLuint programObject) {this->programObject = programObject;}
+	void setEyePos(glm::vec3 & eyePos);
 		
 	private:
 	double halfWidth;					//Half the width of the original grid.  Used to make the grid initially be centered.
@@ -43,6 +50,7 @@ class ParticleSystem
 	Edge * edgeList;					//Represents the connections between particles (one spring per connection)
 	int numEdges;						//Number of edges in the grid
 	Particle * particles;				//Collection of Particle struct objects representing the actual particles (vertices)
+	std::vector<int> indices;				//Mesh indices for GLSL rendering
 	int numParticles;					//Number of particles in the system
 	
 	double * b;							//b vector (used to implement Ax = b solver)
@@ -88,4 +96,25 @@ class ParticleSystem
 	char imageFileName[100];			//Name of output image file
 
 	Logger * logger;					//Reference to Logger class to perform all logging
+
+	GLuint vboHandle[1];	  //handle to vertex buffer object for vertices
+	GLuint indexVboHandle[1]; //handle to vertex buffer object for indices
+
+	GLuint programObject;				//Program object needed for shaders (notably lighting)
+	GLfloat eyePos[3];		  //Position of the eye (for the camera)
+
+	GLfloat lightAmbient[4];  //Normal ambient light setting
+	GLfloat lightDiffuse[4];  //Diffuse light setting
+	GLfloat lightSpecular[4]; //Specular light setting
+	GLfloat lightPosition[4]; //Light position setting
+	GLfloat lightColor[4];  //Light color
+
+	GLfloat matAmbient[4];    //Material ambient setting
+	GLfloat matDiffuse[4];    //Material diffuse setting
+	GLfloat matSpecular[4];   //Material specular setting
+	GLfloat matShininess[1];  //Material shininess setting
+
+	GLfloat lightFullAmbient[4];  //Special "full" ambient setting for debugging
+
+	bool ambientMode;
 };
