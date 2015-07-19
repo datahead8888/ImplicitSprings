@@ -6,6 +6,8 @@
 
 uniform vec4 ambient_coef;
 uniform vec4 diffuse_coef;
+uniform vec4 ambient_back_coef;
+uniform vec4 diffuse_back_coef;
 uniform vec4 specular_coef;
 uniform float mat_shininess;
 uniform vec4 lightAmbient;
@@ -26,20 +28,37 @@ void main() {
 
 	//Ambient
 	vec4 ambient = ambient_coef * lightAmbient;
+	vec4 ambientBack = ambient_back_coef * lightAmbient;
 
 	//Diffuse
 	float ndotl = max(dot(normal,lightVector),0);
 	vec4 diffuse = diffuse_coef * lightDiffuse * ndotl;
+	float ndot2 = max(dot(-normal,lightVector),0);
+	vec4 diffuseBack = diffuse_back_coef * lightDiffuse * ndot2;
 
 	//Specular
 	vec3 reflectVector = normalize(reflect(lightVector, normal));
 	float rdote = max(dot(reflectVector, eyeVector),0);
 	vec4 specular = specular_coef * lightSpecular * pow(rdote, mat_shininess);
-
+	vec3 reflectVectorBack = normalize(reflect(lightVector, -normal));
+	float rdoteBack = max(dot(reflectVectorBack, eyeVector),0);
+	vec4 specularBack = specular_coef * lightSpecular * pow(rdoteBack, mat_shininess);
+	
 	//Set the color
 	vec4 finalColor = (ambient + diffuse + specular) * pcolor;
+	vec4 finalColorBack = (ambientBack + diffuseBack + specularBack) * pcolor;
 
-    gl_FragColor = finalColor; 
+	if (gl_FrontFacing)
+	{
+		gl_FragColor = finalColor; 
+	}
+	else
+	{
+		gl_FragColor = finalColorBack; 
+	}
+    
+	
+	
 	//gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 
  } 

@@ -12,6 +12,8 @@ attribute vec4 normal;
 
 uniform vec4 ambient_coef;
 uniform vec4 diffuse_coef;
+uniform vec4 ambient_back_coef;
+uniform vec4 diffuse_back_coef;
 uniform vec4 specular_coef;
 uniform float mat_shininess;
 uniform vec4 lightAmbient;

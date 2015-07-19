@@ -241,7 +241,6 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	lightDiffuse[0] = 1.0;
 	lightDiffuse[1] = 1.0;
 	lightDiffuse[2] = 1.0;
-
 	lightDiffuse[3] = 1;
 
 	//Turning off specular for now unless it's needed (and verified as good looking)
@@ -263,20 +262,27 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	matAmbient[2] = 0.05;
 	matAmbient[3] = 1;
 
+	matAmbientBack[0] = 0.05;
+	matAmbientBack[1] = 0.05;
+	matAmbientBack[2] = 0.05;
+	matAmbientBack[3] = 1;
+
 	matDiffuse[0] = 0.8;
 	matDiffuse[1] = 0.8;
 	matDiffuse[2] = 0.8;
 	matDiffuse[3] = 1;
+
+	matDiffuseBack[0] = 0.8;
+	matDiffuseBack[1] = 0.8;
+	matDiffuseBack[2] = 0.8;
+	matDiffuseBack[3] = 1;
 
 	matSpecular[0] = 0.9;
 	matSpecular[1] = 0.9;
 	matSpecular[2] = 0.9;
 	matSpecular[3] = 1;
 
-	lightColor[0] = 1.0f;
-	lightColor[1] = 0.1f;
-	lightColor[2] = 0.1f;
-	lightColor[3] = 1.0f;
+	
 
 	matShininess[0] = 10000;
 
@@ -1249,7 +1255,9 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	GLuint ep = glGetUniformLocation(programObject, "eyePosition");
 
 	GLuint d1 = glGetUniformLocation(programObject, "ambient_coef");
+	GLuint d1b = glGetUniformLocation(programObject, "ambient_back_coef");
 	GLuint d2 = glGetUniformLocation(programObject, "diffuse_coef");
+	GLuint d2b = glGetUniformLocation(programObject, "diffuse_back_coef");
 	GLuint d3 = glGetUniformLocation(programObject, "specular_coef");
 	GLuint d4 = glGetUniformLocation(programObject, "mat_shininess");
 
@@ -1284,7 +1292,9 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	glUniform4f(ep, eyePos[0], eyePos[1], eyePos[2], 1); 
 
 	glUniform4f(d1, matAmbient[0], matAmbient[1], matAmbient[2], 1.0);
+	glUniform4f(d1b, matAmbient[0], matAmbient[1], matAmbient[2], 1.0);
 	glUniform4f(d2, matDiffuse[0], matDiffuse[1], matDiffuse[2], 1.0);
+	glUniform4f(d2b, matDiffuse[0], matDiffuse[1], matDiffuse[2], 1.0);
 	glUniform4f(d3, matSpecular[0], matSpecular[1], matSpecular[2],1.0);
 	glUniform1f(d4, matShininess[0]);
 
