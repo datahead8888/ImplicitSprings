@@ -115,8 +115,7 @@ void resize(int width, int height)
 		return;
 	}
 
-	//Calculate the aspect ratio using the x and y dimensions
-	double ar = (double) width / height;
+	
 
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
@@ -128,6 +127,8 @@ void resize(int width, int height)
 	//set up near clipping plane to 0.1, the far clipping pane to 50.0
 	//(Clipping plane values must be positive)
 	//gluPerspective(45.0, ar, 0.1, 50.0);
+
+	//Calculate the aspect ratio using the x and y dimensions
 	ar = (double) width / height;
 
 	//Go back to MODEL VIEW matrix mode
