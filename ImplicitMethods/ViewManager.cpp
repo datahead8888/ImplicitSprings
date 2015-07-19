@@ -86,19 +86,19 @@ void ViewManager::mouseMove(int x, int y)
 //Applies the look at angle, the zoom, and the mouse rotation
 glm::mat4 ViewManager::doTransform()
 { 
-  //gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 9.0f, 0.0f, 1.0f, 0.0f);
-  //glTranslatef(0.0f, 0.0f, -zoomLevel);
-  //glRotatef(xAngle, 0.0f, 1.0f, 0.0f);
-  //glRotatef(yAngle, 1.0f, 0.0f, 0.0f);
-  //gluLookAt(0.0f, 0.0f, 19.0f, 0.0f, 0.0f, 18.0f, 0.0f, 1.0f, 0.0f);
-  //glTranslatef(0.0f, 0.0f, -zoomLevel);
-  //glRotatef(xAngle, 0.0f, 1.0f, 0.0f);
-  //glRotatef(yAngle, 1.0f, 0.0f, 0.0f);
+    //gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 9.0f, 0.0f, 1.0f, 0.0f);
+    //glTranslatef(0.0f, 0.0f, -zoomLevel);
+    //glRotatef(xAngle, 0.0f, 1.0f, 0.0f);
+    //glRotatef(yAngle, 1.0f, 0.0f, 0.0f);
+    //gluLookAt(0.0f, 0.0f, 19.0f, 0.0f, 0.0f, 18.0f, 0.0f, 1.0f, 0.0f);
+    //glTranslatef(0.0f, 0.0f, -zoomLevel);
+    //glRotatef(xAngle, 0.0f, 1.0f, 0.0f);
+    //glRotatef(yAngle, 1.0f, 0.0f, 0.0f);
 
 	//Have the camera look directly at the mesh
 	//Rotate around him, or zoom in / out - based on the mouse camera settings
-	glm::vec3 eyePos(0.0f, 0.0f, 19.0f);
-	glm::vec3 interestPoint(0.0f, 0.0f, 18.0f);
+	glm::vec3 eyePos(0.0f, 0.0f, 10.0f);
+	glm::vec3 interestPoint(0.0f, 0.0f, 9.0f);
 	glm::mat4 viewingMatrix = glm::lookAt(eyePos, interestPoint, glm::vec3(0.0, 1.0, 0.0));
 
 	glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -zoomLevel));
