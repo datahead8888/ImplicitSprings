@@ -267,14 +267,14 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	matAmbientBack[2] = 0.05;
 	matAmbientBack[3] = 1;
 
-	matDiffuse[0] = 0.8;
-	matDiffuse[1] = 0.8;
-	matDiffuse[2] = 0.8;
+	matDiffuse[0] = 0;
+	matDiffuse[1] = 1;
+	matDiffuse[2] = 0;
 	matDiffuse[3] = 1;
 
-	matDiffuseBack[0] = 0.8;
-	matDiffuseBack[1] = 0.8;
-	matDiffuseBack[2] = 0.8;
+	matDiffuseBack[0] = 0;
+	matDiffuseBack[1] = 0;
+	matDiffuseBack[2] = 1;
 	matDiffuseBack[3] = 1;
 
 	matSpecular[0] = 0.9;
@@ -1292,9 +1292,9 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	glUniform4f(ep, eyePos[0], eyePos[1], eyePos[2], 1); 
 
 	glUniform4f(d1, matAmbient[0], matAmbient[1], matAmbient[2], 1.0);
-	glUniform4f(d1b, matAmbient[0], matAmbient[1], matAmbient[2], 1.0);
+	glUniform4f(d1b, matAmbientBack[0], matAmbientBack[1], matAmbientBack[2], 1.0);
 	glUniform4f(d2, matDiffuse[0], matDiffuse[1], matDiffuse[2], 1.0);
-	glUniform4f(d2b, matDiffuse[0], matDiffuse[1], matDiffuse[2], 1.0);
+	glUniform4f(d2b, matDiffuseBack[0], matDiffuseBack[1], matDiffuseBack[2], 1.0);
 	glUniform4f(d3, matSpecular[0], matSpecular[1], matSpecular[2],1.0);
 	glUniform1f(d4, matShininess[0]);
 
