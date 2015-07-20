@@ -199,7 +199,7 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	
 	//Set values for boolean variables
 	showInfoText = true;
-	isAnimating = false;
+	isAnimating = true;
 	renderMode = 1;
 	renderToImage = false;
 	frameNumber = 1;
@@ -1235,6 +1235,8 @@ void ParticleSystem::sendVBOs()
 void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatrix)
 {
 	sendVBOs();
+
+	modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(-halfWidth, 0.0f, halfHeight)); 
 
 	glm::mat4 totalMatrix = projMatrix * modelViewMatrix;
 	glm::mat4 normalMatrix = glm::inverse(modelViewMatrix);
