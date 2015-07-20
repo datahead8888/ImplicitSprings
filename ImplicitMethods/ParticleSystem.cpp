@@ -1556,6 +1556,14 @@ void ParticleSystem::toggleAnimation()
 void ParticleSystem::toggleRenderMode()
 {
 	renderMode = !renderMode;
+	if (renderMode)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
 }
 
 //Method to toggle between rendering to a series of numbered images and not rendering to them
