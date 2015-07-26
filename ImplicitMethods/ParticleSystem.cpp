@@ -268,13 +268,13 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	matAmbientBack[3] = 1;
 
 	matDiffuse[0] = 0;
-	matDiffuse[1] = 1;
+	matDiffuse[1] = 0.7;
 	matDiffuse[2] = 0;
 	matDiffuse[3] = 1;
 
 	matDiffuseBack[0] = 0;
 	matDiffuseBack[1] = 0;
-	matDiffuseBack[2] = 1;
+	matDiffuseBack[2] = 0.7;
 	matDiffuseBack[3] = 1;
 
 	matSpecular[0] = 0.9;
