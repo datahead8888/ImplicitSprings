@@ -229,9 +229,9 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	eyePos[1] = 0.0f;
 	eyePos[2] = -5.0f;
  
-	lightAmbient[0] = 1.0; 
-	lightAmbient[1] = 1.0;
-	lightAmbient[2] = 1.0;
+	lightAmbient[0] = 0.05; 
+	lightAmbient[1] = 0.05;
+	lightAmbient[2] = 0.05;
 
 	lightFullAmbient[0] = 0.9; //Lots of ambient - useful for debugging in wireframe mode
 	lightFullAmbient[1] = 0.9;
@@ -257,14 +257,14 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	lightPosition[2] = 1;
 	lightPosition[3] = 1;
 
-	matAmbient[0] = 0.05;
-	matAmbient[1] = 0.05;
-	matAmbient[2] = 0.05;
+	matAmbient[0] = 1.0;
+	matAmbient[1] = 1.0;
+	matAmbient[2] = 1.0;
 	matAmbient[3] = 1;
 
-	matAmbientBack[0] = 0.05;
-	matAmbientBack[1] = 0.05;
-	matAmbientBack[2] = 0.05;
+	matAmbientBack[0] = 1.0;
+	matAmbientBack[1] = 1.0;
+	matAmbientBack[2] = 1.0;
 	matAmbientBack[3] = 1;
 
 	matDiffuse[0] = 0;
@@ -1282,7 +1282,7 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	//Otherwise use normal ambience
 	if (ambientMode)
 	{
-		glUniform4f(l1, lightAmbient[0], lightAmbient[1], lightFullAmbient[2], 1.0);
+		glUniform4f(l1, lightFullAmbient[0], lightFullAmbient[1], lightFullAmbient[2], 1.0);
 	}
 	else
 	{
@@ -1564,6 +1564,11 @@ void ParticleSystem::toggleRenderMode()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
+}
+
+void ParticleSystem::toggleAmbientMode()
+{
+	ambientMode = !ambientMode;
 }
 
 //Method to toggle between rendering to a series of numbered images and not rendering to them

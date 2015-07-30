@@ -46,6 +46,10 @@ void Keyboard::keyPressed(unsigned char key)
 		case 'Z':
 			particleSystem -> toggleRenderMode();
 			break;
+		case 'c':
+		case 'C':
+			particleSystem -> toggleAmbientMode();
+			break;
 		case ' ':
 			particleSystem -> toggleAnimation();
 			break;

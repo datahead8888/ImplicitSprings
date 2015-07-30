@@ -39,6 +39,7 @@ class ParticleSystem
 	void setWindowDimensions(int width, int height);
 	void toggleAnimation();
 	void toggleRenderMode();
+	void toggleAmbientMode();
 	void toggleImageRendering();
 	void goToRestLengthsForGravity(double threshold);
 	void setProgramObject(GLuint programObject) {this->programObject = programObject;}
