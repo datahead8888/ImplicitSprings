@@ -56,7 +56,7 @@ double ar = 0;
 
 int summedTime = 0;
 int frameCount = 0;
-const int FRAME_COUNT_LIMIT = 500;
+const int FRAME_COUNT_LIMIT = 1000;
 
 //This function is called for rendering by GLUT
 void render()
