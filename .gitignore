@@ -206,3 +206,6 @@ FakesAssemblies/
 
 #Generated avi video files do not need to be in git
 *.avi
+
+#Images generated for Virtual Dub video generation
+*.tga

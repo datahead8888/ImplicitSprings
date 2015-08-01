@@ -1308,6 +1308,65 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (char *) NULL + 0);
 
 	glUseProgram(0);
+
+	if (renderToImage)
+	{
+		//Read the rendered image into a buffer
+		glFlush();
+		glReadPixels(0, 0, windowWidth, windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer);
+
+		//Vertically flip the image in memory - it flips two rows from the screen in memory at a time
+		for (int i = 0; i < windowHeight / 2; i++)
+		{
+			if (i != windowHeight - i)
+			{
+				memcpy(screenRowTemp,(uint8_t *)&screenBuffer[i * windowWidth * 4], windowWidth * 4 * sizeof(uint8_t));
+				memcpy((uint8_t *)&screenBuffer[i * windowWidth * 4], (uint8_t *)&screenBuffer[(windowHeight - i) * windowWidth * 4], windowWidth * 4 * sizeof(uint8_t));
+				memcpy((uint8_t *)&screenBuffer[(windowHeight - i) * windowWidth * 4], screenRowTemp, windowWidth * 4 * sizeof(uint8_t));
+			}
+		}
+		
+		//Write a new targa file, with a new number
+		sprintf(imageFileName, "images\\ImplicitMethods%d.tga", frameNumber);
+		tga_result result = tga_write_rgb(imageFileName, screenBuffer, windowWidth, windowHeight, 32);
+		#ifdef DEBUGGING
+		if (logger -> isLogging && logger -> loggingLevel >= logger -> LIGHT)
+		{
+			if (result != TGA_NOERR)
+			{
+				cout << tga_error(result) << " at frame number " << frameNumber << endl;
+			}
+		}
+		#endif
+
+		frameNumber++;
+	}
+
+	//Render onscreen text with informational messages
+	if (showInfoText)
+	{
+		//Reference: http://programming-technique.blogspot.com/2012/05/font-rendering-in-glut-using-bitmap.html
+		glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, windowWidth, 0, windowHeight);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glRasterPos2i(20, 20);
+		for (int i = 0; i < strlen(text); i++)
+		{
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+		}
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+	}
+
+
  			
 }
 
