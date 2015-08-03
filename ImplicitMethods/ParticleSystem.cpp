@@ -36,12 +36,12 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	dimensionSquared = DIMENSION * DIMENSION;
 
 	//Declare Constants
-	kd = 5;					//Damping constant
+	kd = 15;					//Damping constant
 	ks = 500;					//Spring constant - 1000 seems to give reasonable stiffness, but much larger values work, too
 	earthGravityValue = 9.8;	//meters per second for earth gravity force
 	//Set number of rows and columns for grid here
-	rows = 10;
-	cols = 10;
+	rows = 40;
+	cols = 40;
 	sheetWidth = 5;
 	sheetHeight = 5;
 	double density = 3;	//Density of object - used to find total object mass

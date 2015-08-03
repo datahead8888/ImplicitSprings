@@ -71,6 +71,8 @@ void render()
 	particleSystem -> doUpdate(timeElapsed);
 	particleSystem -> calculateNormals();
 
+	viewManager.doUpdate(timeElapsed);
+
 	//Render Logic
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glLoadIdentity();
@@ -181,7 +183,7 @@ int main(int argCount, char **argValue)
 {
 	logger = new Logger();
 	particleSystem = new ParticleSystem(logger);
-	keyboard = new Keyboard(particleSystem, logger);
+	keyboard = new Keyboard(particleSystem, &viewManager, logger);
 
 	glutInit(&argCount,argValue);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE | GLUT_RGBA);

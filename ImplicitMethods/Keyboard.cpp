@@ -4,9 +4,10 @@
 //Constructor for Keyboard class
 //Parameter theSystem - a pointer reference to the ParticleSystem class
 //Parameter logger - a pointer reference to the Logger class
-Keyboard::Keyboard(ParticleSystem * theSystem, Logger * logger)
+Keyboard::Keyboard(ParticleSystem * theSystem, ViewManager * viewManager, Logger * logger)
 {
 	particleSystem = theSystem;
+	this->viewManager = viewManager;
 	this -> logger = logger;
 	for (int i = 0; i < NUMBER_KEYS; i++)
 	{
@@ -72,6 +73,9 @@ void Keyboard::keyPressed(unsigned char key)
 		case 'O':
 		case 'o':
 			logger -> printConstraintDeltaV = !logger -> printConstraintDeltaV;
+			break;
+		case '/':
+			viewManager->toggleAutoRotate();
 			break;
 		}
 	}
