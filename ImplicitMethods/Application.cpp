@@ -98,8 +98,21 @@ void render()
 	summedTime += (endTime - startTime);
 
 	if (frameCount == FRAME_COUNT_LIMIT) {
+
+		//Build a text string showing whether this is explicit or implicit simulation
+		string isImplicitStr;
+		if (particleSystem->getIsImplicit())
+		{
+			isImplicitStr = "implicit";
+		}
+		else
+		{
+			isImplicitStr = "explicit";
+		}
+
+		//Calculate the FPS and show it
 		double fps = frameCount / (summedTime / double(1000));
-		cout << "Average FPS for " << FRAME_COUNT_LIMIT << " frames is: " << fps << endl;
+		cout << "Average FPS for " << isImplicitStr << " for " << FRAME_COUNT_LIMIT << " frames is: " << fps << endl;
 		frameCount = 0;
 		summedTime = 0;
 	}

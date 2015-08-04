@@ -77,6 +77,10 @@ void Keyboard::keyPressed(unsigned char key)
 		case '/':
 			viewManager->toggleAutoRotate();
 			break;
+		case 'q':
+		case 'Q':
+			particleSystem->toggleImplicit();
+			break;
 		}
 	}
 	keys[key] = true;

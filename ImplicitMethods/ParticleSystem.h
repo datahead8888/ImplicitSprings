@@ -28,6 +28,8 @@ class ParticleSystem
 	void sendVBOs();
 	void reset();
 	void doUpdate(double elapsedSeconds);
+	void doUpdateExplicit(double elapsedSeconds);
+	void doUpdateImplicit(double elapsedSeconds);
 	double * findConjugateGradient(double * ADiagonalEntries, double * ANonDiagonalEntries, double * b, double * x0);
 	void calculateNormals();
 	void doRender();
@@ -41,9 +43,11 @@ class ParticleSystem
 	void toggleRenderMode();
 	void toggleAmbientMode();
 	void toggleImageRendering();
+	void toggleImplicit();
 	void goToRestLengthsForGravity(double threshold);
 	void setProgramObject(GLuint programObject) {this->programObject = programObject;}
 	void setEyePos(glm::vec3 & eyePos);
+	bool getIsImplicit() {return isImplicit;}
 		
 	private:
 	double halfWidth;					//Half the width of the original grid.  Used to make the grid initially be centered.
@@ -125,4 +129,5 @@ class ParticleSystem
 	GLfloat lightFullAmbient[4];  //Special "full" ambient setting for debugging
 
 	bool ambientMode;
+	bool isImplicit;
 };

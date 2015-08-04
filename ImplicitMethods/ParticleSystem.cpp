@@ -282,12 +282,19 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	matSpecular[2] = 0.9;
 	matSpecular[3] = 1;
 
-	
-
 	matShininess[0] = 10000;
 
 	ambientMode = false;
 
+	isImplicit = true;
+	if (isImplicit)
+	{
+		sprintf(text, "Implicit Implementation");
+	}
+	else
+	{
+		sprintf(text, "Explicit Implementation");
+	}
 }
 
 //Destructor - free all memory for dynamically allocated arrays
@@ -338,11 +345,131 @@ void ParticleSystem::reset()
 
 }
 
-//Update Method - Implements one time step for the animation
+//Normal update function - Implements one timestep for the animation
+//It will call upon the implicit or explicit methods to advance the physics simluation, depending on the setting
+void ParticleSystem::doUpdate(double deltaT)
+{
+	if (isImplicit)
+	{
+		doUpdateImplicit(deltaT);
+	}
+	else
+	{
+		doUpdateExplicit(deltaT);
+
+	}
+}
+
+//Update Method - Explicit Version
+//Uses hooke's law with explicit methods to update the particle velocities and in turn the positions
+//Parameter - deltaT - Amount of time elapsed to use in integrating.  Type double. 
+void ParticleSystem::doUpdateExplicit(double deltaT)
+{
+	for (int i = 0; i < numParticles * DIMENSION; i++)
+	{
+		currentForce[i] = 0;
+	}
+
+	//Apply gravity
+	for (int i = 1; i < numParticles * DIMENSION; i += DIMENSION)
+	{
+		currentForce[i] = -earthGravityValue * massMatrix[i];
+	}
+	
+	double deltaTSquared = deltaT * deltaT;	//It is slightly more efficient to store this than recompute it
+
+	for (int e = 0; e < numEdges; e++)
+	{
+		//Get the first and second particles from the edge, as well as the rest length
+		int particle1 = edgeList[e].start;
+		int particle2 = edgeList[e].end;
+		double restLength = restLengthValues[edgeList[e].restLengthIndex];
+		
+		if (particle1 != particle2)
+		{											
+			//Do particle2 - particle1 -> the 1st direction of the spring
+
+			double xij[DIMENSION];  //Position difference between particles
+			double vij[DIMENSION];  //Velocity difference between particles
+							
+			double xijDotProduct = 0; //Dot product of xij vector
+			for (int ii = 0; ii < DIMENSION; ii++)
+			{
+				xij[ii] = particles[particle2].position[ii] - particles[particle1].position[ii];
+				vij[ii] = particles[particle2].velocity[ii] - particles[particle1].velocity[ii];
+				xijDotProduct += xij[ii] * xij[ii];
+			}
+			double magnitude = sqrt(xijDotProduct); //Magnitude of xij vector
+			
+			
+
+			//Calculate explicit spring force for this edge (used for finding b) based on Choi's formula
+			//We are calculating the force for time n based on hooke's law - this will be used to help us approximate time n + 1 using backwards Euler integration
+			//Note: xij, vij, and magnitude were already calculated for this edge above
+			for (int i = 0; i < DIMENSION; i++)
+			{
+				//Do particle2 -> particle1 -> the 1st direction of the spring
+				double forceExerted = (ks * (magnitude - restLength)) * (xij[i] / magnitude) + kd * vij[i];  //Change in force
+				currentForce[particle1*DIMENSION+i] += forceExerted;
+				currentForce[particle2*DIMENSION+i] -= forceExerted; //particle 1 -> particle 2 -- opposite direction
+			}		
+		} //if (particle1 != particle2)
+	} //for (int e = 0; e < numEdges; e++)
+
+	
+
+	//Zero out currentForce vector entries corresponding to constraints
+	for (int k = 0; k < numConstraints; k++)
+	{
+		int constrained = constraintParticles[k];
+		for (int ii = 0; ii < DIMENSION; ii++)
+		{
+			currentForce[constrained*DIMENSION+ii] = 0;
+		}
+		
+	}
+	
+	if (isAnimating)
+	{
+		for (int i = 0; i < numParticles; i++)
+		{
+			bool processParticle = true;				//True if current particle will move, false if not
+			for (int k = 0; k < numConstraints; k++)
+			{
+				if (i == constraintParticles[k])
+				{
+					processParticle = false;
+					break;
+				}
+			}
+
+			if (processParticle)
+			{
+				for (int j = 0; j < DIMENSION; j++)
+				{
+					//Add delta velocity to each particle's velocity
+					particles[i].velocity[j] += currentForce[i*DIMENSION+j] * deltaT;
+
+					//Use explicit integration with velocity to update each particle's position
+					particles[i].position[j] += particles[i].velocity[j] * deltaT;
+				}
+			}
+		}
+	}
+	
+	#ifdef DEBUGGING
+	if (logger -> isLogging)
+	{
+		logger -> printParticles(particles, numParticles, logger -> MEDIUM);
+	}
+	#endif
+}
+
+//Update Method - Implicit Version
 //Uses hooke's law with implicit methods to construct matrix A and vector b then calls the conjugate gradient method to find deltaV
 //This is then used to update the particle velocities and in turn the positions
 //Parameter - deltaT - Amount of time elapsed to use in integrating.  Type double. 
-void ParticleSystem::doUpdate(double deltaT)
+void ParticleSystem::doUpdateImplicit(double deltaT)
 {
 	//Initialize anything involving any type of summation to 0
 	for (int i = 0; i < numParticles * dimensionSquared; i++)
@@ -1665,5 +1792,19 @@ void ParticleSystem::toggleImageRendering()
 	else
 	{
 		sprintf(text, "Image rendering off");
+	}
+}
+
+//Method to toggle between usage of implicit and explicit physics systems
+void ParticleSystem::toggleImplicit()
+{
+	isImplicit = !isImplicit;
+	if (isImplicit)
+	{
+		sprintf(text, "Implicit Implementation");
+	}
+	else
+	{
+		sprintf(text, "Explicit Implementation");
 	}
 }
