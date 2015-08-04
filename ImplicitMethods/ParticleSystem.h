@@ -98,8 +98,14 @@ class ParticleSystem
 
 	Logger * logger;					//Reference to Logger class to perform all logging
 
-	GLuint vboHandle[1];	  //handle to vertex buffer object for vertices
-	GLuint indexVboHandle[1]; //handle to vertex buffer object for indices
+	GLuint vboHandle[1];			//handle to vertex buffer object for vertices for regular rendering
+	GLuint indexVboHandle[1];		//handle to vertex buffer object for indices for regular rendering
+	
+	GLuint gridVboHandle[1];		//handle to vertex buffer object for vertices for special spring grid rendering
+	GLuint gridIndexVboHandle[1];	//handle to vertex buffer object for indices for special spring grid rendering
+
+	std::vector<Particle> gridVertices;		//Special Grid Rendering Vertices
+	std::vector<int> gridIndices;			//Special Grid Rendering Indices
 
 	GLuint programObject;				//Program object needed for shaders (notably lighting)
 	GLfloat eyePos[3];		  //Position of the eye (for the camera)

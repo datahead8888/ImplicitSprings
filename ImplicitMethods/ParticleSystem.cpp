@@ -1158,77 +1158,83 @@ void ParticleSystem::setEyePos(glm::vec3 & eyePos)
 
 void ParticleSystem::initVBOs()
 {
-	//Spring mesh
+	//Spring mesh (normal rendering)
 	glGenBuffers(1, vboHandle);
 	glGenBuffers(1, indexVboHandle);
+
+	//Spring mesh (special edge rendering)
+	glGenBuffers(1, gridVboHandle);
+	glGenBuffers(1, gridIndexVboHandle);
 }
 
 void ParticleSystem::sendVBOs()
 {
-	//Spring Mesh
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * numParticles, particles, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	indices.clear();
-
-	//Render surfaces
-	int edgeCounter = 0;	//Current edge number
-	int i = 0, j = 0;		//For loop indices
-	for (i = 0; i < rows - 1; i++) //row
+	if (renderMode)
 	{
-		for (j = 0; j < cols - 1; j++) //column
+		//Spring Mesh - full rendering
+		glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * numParticles, particles, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		indices.clear();
+
+		//Render surfaces
+		int edgeCounter = 0;	//Current edge number
+		int i = 0, j = 0;		//For loop indices
+		for (i = 0; i < rows - 1; i++) //row
 		{
-			/*
-			Particle * topLeft = &particles[edgeList[edgeCounter].start];			//because this was the start of the first connection
-			Particle * bottomLeft = &particles[edgeList[edgeCounter].end];			//because the first connection connected to the bottom
-			Particle * bottomRight = &particles[edgeList[edgeCounter + 1].end];		//because the second connection connected to the bottom right
-			Particle * topRight = &particles[edgeList[edgeCounter + 2].end];		//because the third connection connected to the right
+			for (j = 0; j < cols - 1; j++) //column
+			{
+				int topLeft = edgeList[edgeCounter].start;			//because this was the start of the first connection
+				int bottomLeft = edgeList[edgeCounter].end;			//because the first connection connected to the bottom
+				int bottomRight = edgeList[edgeCounter + 1].end;		//because the second connection connected to the bottom right
+				int topRight = edgeList[edgeCounter + 2].end;		//because the third connection connected to the right
 	
-			edgeCounter += 4;
+				edgeCounter += 4;
 
-			glBegin(GL_TRIANGLES);
-				
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glNormal3f(bottomLeft->normal[0], bottomLeft->normal[1], bottomLeft->normal[2]);
-			glVertex3f(bottomLeft->position[0], bottomLeft->position[1], bottomLeft->position[2]); 
-			glNormal3f(topLeft->normal[0], topLeft->normal[1], topLeft->normal[2]);
-			glVertex3f(topLeft->position[0], topLeft->position[1], topLeft->position[2]);
-			glNormal3f(topRight->normal[0], topRight->normal[1], topRight->normal[2]);
-			glVertex3f(topRight->position[0], topRight->position[1], topRight->position[2]);
-		
-			glNormal3f(bottomRight->normal[0], bottomRight->normal[1], bottomRight->normal[2]);
-			glVertex3f(bottomRight->position[0], bottomRight->position[1], bottomRight->position[2]);
-			glNormal3f(bottomLeft->normal[0], bottomLeft->normal[1], bottomLeft->normal[2]); 
-			glVertex3f(bottomLeft->position[0], bottomLeft->position[1], bottomLeft->position[2]); 
-			glNormal3f(topRight->normal[0], topRight->normal[1], topRight->normal[2]);
-			glVertex3f(topRight->position[0], topRight->position[1], topRight->position[2]);
-				
-			glEnd();
-			*/
-
-			int topLeft = edgeList[edgeCounter].start;			//because this was the start of the first connection
-			int bottomLeft = edgeList[edgeCounter].end;			//because the first connection connected to the bottom
-			int bottomRight = edgeList[edgeCounter + 1].end;		//because the second connection connected to the bottom right
-			int topRight = edgeList[edgeCounter + 2].end;		//because the third connection connected to the right
-	
-			edgeCounter += 4;
-
-			indices.push_back(bottomLeft);
-			indices.push_back(topLeft);
-			indices.push_back(topRight);
+				indices.push_back(bottomLeft);
+				indices.push_back(topLeft);
+				indices.push_back(topRight);
 			
-			indices.push_back(bottomRight);
-			indices.push_back(bottomLeft);
-			indices.push_back(topRight);
+				indices.push_back(bottomRight);
+				indices.push_back(bottomLeft);
+				indices.push_back(topRight);
+			}
+
+			edgeCounter++;
 		}
 
-		edgeCounter++;
-	}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), &indices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
+	else
+	{
+		//Clear vertex and index lists for lines rendering logic (wireframe)
+		gridVertices.clear();
+		gridIndices.clear();
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), &indices[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		//Lines Rendering logic (wireframe)
+		for (int i = 0; i < numEdges; i++)
+		{
+			Particle * one = &particles[edgeList[i].start];
+			Particle * two = &particles[edgeList[i].end];
+
+			gridVertices.push_back(*one);
+			gridVertices.push_back(*two);
+
+			gridIndices.push_back(i * 2);
+			gridIndices.push_back(i * 2 + 1);
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, gridVboHandle[0]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * gridVertices.size(), &gridVertices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gridIndexVboHandle[0]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * gridIndices.size(), &gridIndices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
  
 }
 
@@ -1271,8 +1277,16 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	glEnableVertexAttribArray(c1);
     glEnableVertexAttribArray(c2); 
 
-	glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
+	if(renderMode)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vboHandle[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle[0]);
+	}
+	else
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, gridVboHandle[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gridIndexVboHandle[0]);
+	}
 
 	glVertexAttribPointer(c0,4,GL_FLOAT, GL_FALSE, sizeof(Particle),(char*) NULL+0); 
 	glVertexAttribPointer(c1,4,GL_FLOAT, GL_FALSE, sizeof(Particle),(char*) NULL+16); 
@@ -1305,7 +1319,16 @@ void ParticleSystem::doRender(glm::mat4 & projMatrix, glm::mat4 & modelViewMatri
 	glUniformMatrix4fv(m3, 1, GL_FALSE, &normalMatrix[0][0]);
 
 	//Draw
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (char *) NULL + 0);
+	if (renderMode)
+	{
+		//Normal cloth rendering
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (char *) NULL + 0);
+	}
+	else
+	{
+		//Special grid wireframe mode
+		glDrawElements(GL_LINES, gridIndices.size(), GL_UNSIGNED_INT, (char *) NULL + 0);
+	}
 
 	glUseProgram(0);
 
@@ -1615,14 +1638,14 @@ void ParticleSystem::toggleAnimation()
 void ParticleSystem::toggleRenderMode()
 {
 	renderMode = !renderMode;
-	if (renderMode)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	else
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
+	//if (renderMode)
+	//{
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//}
+	//else
+	//{
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//}
 }
 
 void ParticleSystem::toggleAmbientMode()
