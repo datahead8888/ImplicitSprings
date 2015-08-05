@@ -36,12 +36,12 @@ ParticleSystem::ParticleSystem(Logger * logger)
 	dimensionSquared = DIMENSION * DIMENSION;
 
 	//Declare Constants
-	kd = 15;					//Damping constant
+	kd = 5;					//Damping constant
 	ks = 500;					//Spring constant - 1000 seems to give reasonable stiffness, but much larger values work, too
 	earthGravityValue = 9.8;	//meters per second for earth gravity force
 	//Set number of rows and columns for grid here
-	rows = 40;
-	cols = 40;
+	rows = 10;
+	cols = 10;
 	sheetWidth = 5;
 	sheetHeight = 5;
 	double density = 3;	//Density of object - used to find total object mass
@@ -448,7 +448,7 @@ void ParticleSystem::doUpdateExplicit(double deltaT)
 				for (int j = 0; j < DIMENSION; j++)
 				{
 					//Add delta velocity to each particle's velocity
-					particles[i].velocity[j] += currentForce[i*DIMENSION+j] * deltaT;
+					particles[i].velocity[j] += currentForce[i*DIMENSION+j] / massMatrix[i]* deltaT;
 
 					//Use explicit integration with velocity to update each particle's position
 					particles[i].position[j] += particles[i].velocity[j] * deltaT;
