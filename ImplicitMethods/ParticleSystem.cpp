@@ -30,7 +30,7 @@ const double epsilon = 1e-12;	//Used to check approximate equality to 0
 extern const int DIMENSION;		//DIMENSION of system (3 for 3D)
 
 //Constructor - initializes particles and settings
-ParticleSystem::ParticleSystem(Logger * logger)
+ParticleSystem::ParticleSystem(Logger * logger, bool isImplicit)
 {
 	this -> logger = logger;
 	dimensionSquared = DIMENSION * DIMENSION;
@@ -286,7 +286,7 @@ ParticleSystem::ParticleSystem(Logger * logger)
 
 	ambientMode = false;
 
-	isImplicit = true;
+	this->isImplicit = isImplicit;
 	if (isImplicit)
 	{
 		sprintf(text, "Implicit Implementation");

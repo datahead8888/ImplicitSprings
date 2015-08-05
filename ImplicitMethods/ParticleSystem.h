@@ -22,7 +22,7 @@
 class ParticleSystem
 {
 	public:
-	ParticleSystem(Logger * logger);
+	ParticleSystem(Logger * logger, bool isImplicit = true);
 	~ParticleSystem();
 	void initVBOs();
 	void sendVBOs();

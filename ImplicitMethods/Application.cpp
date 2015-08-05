@@ -60,6 +60,7 @@ const int FRAME_COUNT_LIMIT = 1000;
 
 const int NUM_ITERATIONS = 10;		  //Number of iterations to run each time before doing a render
 const double TIME_ELAPSED = 0.001;    //Duration of each fixed timestep
+bool IS_IMPLICIT = true;			  //True if start out with implicit, false if start out with explicit
 
 //This function is called for rendering by GLUT
 void render()
@@ -203,7 +204,7 @@ void keyReleased (unsigned char key, int mystery, int mystery2)
 int main(int argCount, char **argValue)
 {
 	logger = new Logger();
-	particleSystem = new ParticleSystem(logger);
+	particleSystem = new ParticleSystem(logger, IS_IMPLICIT);
 	keyboard = new Keyboard(particleSystem, &viewManager, logger);
 
 	glutInit(&argCount,argValue);
