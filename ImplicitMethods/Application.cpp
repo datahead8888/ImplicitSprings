@@ -58,6 +58,9 @@ int summedTime = 0;
 int frameCount = 0;
 const int FRAME_COUNT_LIMIT = 1000;
 
+const int NUM_ITERATIONS = 10;		  //Number of iterations to run each time before doing a render
+const double TIME_ELAPSED = 0.001;    //Duration of each fixed timestep
+
 //This function is called for rendering by GLUT
 void render()
 {
@@ -67,11 +70,16 @@ void render()
 	startTime = glutGet(GLUT_ELAPSED_TIME);
 	
 	//Update Logic
-	double timeElapsed = 0.01;  //Size of time step
-	particleSystem -> doUpdate(timeElapsed);
-	particleSystem -> calculateNormals();
+	for (int i = 0; i < NUM_ITERATIONS; i++)
+	{
+		particleSystem -> doUpdate(TIME_ELAPSED);
+		particleSystem -> calculateNormals();
 
-	viewManager.doUpdate(timeElapsed);
+		
+	}
+
+	//The view manager updates are so simple that we need only one iteration.  Calculate the total fixed timestep, and get it all done at once.
+	viewManager.doUpdate(TIME_ELAPSED * NUM_ITERATIONS);
 
 	//Render Logic
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
