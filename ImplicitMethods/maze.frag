@@ -1,6 +1,6 @@
 //Modified from http://www.cse.ohio-state.edu/~hwshen/5542/Site/Slides_files/cubeXform.frag
 //and http://www.cse.ohio-state.edu/~hwshen/5542/Site/Slides_files/shading_glsl.pdf
-//and based on the code presented by Soumya Dutta in class
+//and based on the code presented by graduate teaching associate Soumya Dutta in real time rendering class
 
 //This shader implements the equations for local illumination
 

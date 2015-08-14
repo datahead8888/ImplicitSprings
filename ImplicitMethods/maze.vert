@@ -1,6 +1,6 @@
 //Modified from http://www.cse.ohio-state.edu/~hwshen/5542/Site/Slides_files/cubeXform.vert
 //and http://www.cse.ohio-state.edu/~hwshen/5542/Site/Slides_files/shading_glsl.pdf
-//and based on the code presented by Soumya Dutta in class
+//and based on the code presented by graduate teaching associate Soumya Dutta in real time rendering class
 
 //This vertex shader applies the local2clip transformation to each point to set the vertex position, applies the local2eye transformation to each vertex so that the fragment shader can use it,
 //transforms normals, and passes info to the fragment shader

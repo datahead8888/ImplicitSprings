@@ -19,6 +19,11 @@
 //Implicit methods are used for the integration.  This requires a solving system but allows much larger spring constants without instability
 //and potentially allows more efficient implementation
 //A gravity component is also present
+//Based on:
+//http://graphics.snu.ac.kr/~kjchoi/publication/cloth.pdf - Explicit and implicit formulas for hooke's law - page 3
+//http://www.unc.edu/~mucha/Reprints/SCAclothcontrolpreprint.pdf - Formulas for A and b in Ax = b system - page 5
+//http://en.wikipedia.org/wiki/Conjugate_gradient - Algorithm for conjugate gradient (solves Ax = b)
+//	This is turn based on the paper - Methods of conjugate gradients for solving linear systems, by Magnus Rudolph Hestenes and Eduard Stiefel
 class ParticleSystem
 {
 	public:
